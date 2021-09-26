@@ -1,9 +1,10 @@
 import cv2
 import matplotlib.pyplot as plt
-import math
 import numpy as np
 import time
 from sklearn.decomposition import PCA
+from sklearn import preprocessing
+from sklearn.cluster import KMeans
 from createGabor import createGabor
 
 
@@ -145,8 +146,8 @@ featureMaps = []
 for gaborFilter in gaborFilterBank:
     # gaborFilter["filterPairs"] has two elements. One is related to the real part 
     # of the Gabor Filter and the other one is the imagineray part.
-    real_out = None  # \\TODO: filter the grayscale input with real part of the Gabor
-    imag_out = None  # \\TODO: filter the grayscale input with imaginary part of the Gabor
+    real_out = cv2.filter2D(img, -1, gaborFilter["filterPairs"][:,0])  # \\TODO: filter the grayscale input with real part of the Gabor
+    imag_out = cv2.filter2D(img, -1, gaborFilter["filterPairs"][1,:])  # \\TODO: filter the grayscale input with imaginary part of the Gabor
     featureMaps.append(np.stack((real_out, imag_out), 2))
     
     # Visualize the filter responses if you wish.
@@ -173,7 +174,7 @@ featureMags = []
 for i, fm in enumerate(featureMaps):
     real_part = fm[...,0]
     imag_part = fm[...,1]
-    mag = None  # \\TODO: Compute the magnitude here
+    mag = (real_part**2+imag_part**2)**(1/2) # \\TODO: Compute the magnitude here
     featureMags.append(mag)
     
     # Visualize the magnitude response if you wish.
@@ -207,6 +208,13 @@ if smoothingFlag:
         # i)  filter the magnitude response with appropriate Gaussian kernels
         # ii) insert the smoothed image into features[:,:,j]
     #END_FOR
+    for i in [1,len(featureMags)-1]:
+        sigma = gaborFilterBank[i]["sigma"]
+        GaussKernel = gauss2D(sigma, sigma, 3)
+        smoothed = cv2.filter2D(featureMags[i], -1, GaussKernel)
+        print(featureMags[i])
+        
+        features[:,:,i] = smoothed
 else:
     # Don't smooth but just insert magnitude images into the matrix
     # called features.
@@ -223,9 +231,10 @@ features = np.reshape(features, newshape=(numRows * numCols, -1))
 
 # Standardize features. 
 # \\ Hint: see http://ufldl.stanford.edu/wiki/index.php/Data_Preprocessing for more information.
+# \\ TODO: i)  Implement standardization on matrix called features.
+#          ii) Return the standardized data matrix.
+features = preprocessing.scale(features)  
 
-features = None  # \\ TODO: i)  Implement standardization on matrix called features.
-                 #          ii) Return the standardized data matrix.
 
 
 # (Optional) Visualize the saliency map using the first principal component 
@@ -247,7 +256,7 @@ plt.show()
 # \\ Hint-2: use the parameter k defined in the first section when calling
 #            sklearn's built-in kmeans function.
 tic = time.time()
-pixLabels = None  # \\TODO: Return cluster labels per pixel
+pixLabels = KMeans(n_clusters=k).fit(features).labels_   # \\TODO: Return cluster labels per pixel
 ctime = time.time() - tic
 print(f'Clustering completed in {ctime} seconds.')
 
@@ -267,7 +276,7 @@ plt.show()
 Aseg1 = np.zeros_like(img)
 Aseg2 = np.zeros_like(img)
 BW = pixLabels == 2  # check for the value of your labels in pixLabels (could be 1 or 0 instead of 2)
-BW = np.repeat(BW[:, :, np.newaxis], 3, axis=2) # do this only if you have 3 channels in the img
+# BW = np.repeat(BW[:, :, np.newaxis], 3, axis=2) # do this only if you have 3 channels in the img
 Aseg1[BW] = img[BW]
 Aseg2[~BW] = img[~BW]
 
