@@ -1,4 +1,4 @@
-
+import numpy as np
 from math import pi,sqrt,exp
 
 def  gauss1D(sigma ,kernel_size):
@@ -21,3 +21,4 @@ def  gauss2D(sigma_x,sigma_y,kernel_size):
 
 def createGabor():
 	# your code
+	return 
