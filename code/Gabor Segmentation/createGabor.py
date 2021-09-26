@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+import math
 
 def createGabor( sigma, theta, lamda, psi, gamma ):
 #CREATEGABOR Creates a complex valued Gabor filter.
