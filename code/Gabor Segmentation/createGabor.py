@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def createGabor( sigma, theta, lamda, psi, gamma ):
 #CREATEGABOR Creates a complex valued Gabor filter.
 #   myGabor = createGabor( sigma, theta, lamda, psi, gamma ) generates
@@ -44,11 +45,14 @@ def createGabor( sigma, theta, lamda, psi, gamma ):
 
     # Compute the rotation of pixels by theta.
     # \\ Hint: Create appropriate rotation matrix to compute the rotated pixel coordinates: rot(theta) * XY.
+    cs, sn = np.cos(theta), np.sin(theta)
+   
     rotMat = generateRotationMatrix(theta)
+    #print(rotMat.shape)
     rot_XY = np.matmul(rotMat,XY)
     rot_x = rot_XY[0,:]
     rot_y = rot_XY[1,:]
-
+    #print(rot_x)
 
     # Create the Gaussian envelope.
     # \\ IMPLEMENT the helper function createGauss.
@@ -61,8 +65,8 @@ def createGabor( sigma, theta, lamda, psi, gamma ):
 
     # Modulate (multiply) Gaussian envelope with the carriers to compute 
     # the real and imaginary components of the complex Gabor filter. 
-    myGabor_real = None  # \\TODO: modulate gaussianEnv with cosCarrier
-    myGabor_imaginary = None  # \\TODO: modulate gaussianEnv with sinCarrier
+    myGabor_real = gaussianEnv*cosCarrier  # \\TODO: modulate gaussianEnv with cosCarrier
+    myGabor_imaginary = gaussianEnv*sinCarrier  # \\TODO: modulate gaussianEnv with sinCarrier
 
     # Pack myGabor_real and myGabor_imaginary into myGabor.
     h, w = myGabor_real.shape
@@ -72,30 +76,29 @@ def createGabor( sigma, theta, lamda, psi, gamma ):
 
     # Uncomment below lines from "fig = plt.figure()" to see how are the gabor filters
     # figure
-    # subplot(121), imshow(myGabor_real,[])
-    # subplot(122), imshow(myGabor_imaginary, [])
+    #subplot(121), imshow(myGabor_real,[])
+    #subplot(122), imshow(myGabor_imaginary, [])
 
-    # fig = plt.figure()
-    # ax = fig.add_subplot(1, 2, 1)
-    # ax.imshow(myGabor_real)    # Real
-    # ax.axis("off")
-    # ax = fig.add_subplot(1, 2, 2)
-    # ax.imshow(myGabor_imaginary)    # Real
-    # ax.axis("off")
-    # plt.show()
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 2, 1)
+    ax.imshow(myGabor_real)    # Real
+    ax.axis("off")
+    ax = fig.add_subplot(1, 2, 2)
+    ax.imshow(myGabor_imaginary)    # Real
+    ax.axis("off")
+    plt.show()
     return myGabor
 
 
 # Helper Functions 
 # ----------------------------------------------------------
-
 def generateRotationMatrix(theta):
     # ----------------------------------------------------------
     # Returns the rotation matrix. 
     # \\ Hint: https://en.wikipedia.org/wiki/Rotation_matrix \\
     cs, sn = np.cos(theta), np.sin(theta)
     rotMat = np.array(((cs, -sn), (sn, cs)))
-    print(rotMat.shape)
+    #print(rotMat.shape)
       # \\TODO: code the rotation matrix which fits gabor equation given theta. 
     return rotMat.transpose()
 
@@ -103,7 +106,7 @@ def generateRotationMatrix(theta):
 def createCos(rot_x, lamda, psi):
     # ----------------------------------------------------------
     # Returns the 2D cosine carrier. 
-    cosCarrier = math.cos(2*pi*rot_x/lamda + psi) # \\TODO: Implement the cosine given rot_x, lamda and psi.
+    cosCarrier = np.cos(2*math.pi*rot_x/lamda + psi) # \\TODO: Implement the cosine given rot_x, lamda and psi.
 
     # Reshape the vector representation to matrix.
     cosCarrier = np.reshape(cosCarrier, (np.int32(np.sqrt(len(cosCarrier))), -1))
@@ -113,7 +116,7 @@ def createCos(rot_x, lamda, psi):
 def createSin(rot_x, lamda, psi):
     # ----------------------------------------------------------
     # Returns the 2D sine carrier. 
-    sinCarrier = math.sin(2*pi*rot_x/lamda + psi)  # \\TODO: Implement the sine given rot_x, lamda and psi.
+    sinCarrier = np.sin(2*math.pi*rot_x/lamda + psi)  # \\TODO: Implement the sine given rot_x, lamda and psi.
 
     # Reshape the vector representation to matrix.
     sinCarrier = np.reshape(sinCarrier, (np.int32(np.sqrt(len(sinCarrier))), -1))
@@ -123,7 +126,7 @@ def createSin(rot_x, lamda, psi):
 def createGauss(rot_x, rot_y, gamma, sigma):
     # ----------------------------------------------------------
     # Returns the 2D Gaussian Envelope. 
-    gaussEnv = exp((-rot_x**2+gamma**2*rot_y**2)/2*sigma**2)  # \\TODO: Implement the Gaussian envelope.
+    gaussEnv = np.exp((-rot_x**2+gamma**2*rot_y**2)/2*sigma**2)  # \\TODO: Implement the Gaussian envelope.
 
     # Reshape the vector representation to matrix.
     gaussEnv = np.reshape(gaussEnv, (np.int32(np.sqrt(len(gaussEnv))), -1))
