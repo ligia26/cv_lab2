@@ -27,7 +27,7 @@ def compute_LoG(image, LOG_type):
         
 
     elif LOG_type == 3:
-        sigma2 = 1
+        sigma2 = 0.8
         gauss_kernel1 = gauss2D(sigma, sigma, kernel_size)
         gauss_kernel2 = gauss2D(sigma2, sigma2, kernel_size)
         DoG_kernel = gauss_kernel1 - gauss_kernel2
