@@ -4,7 +4,7 @@ import math
 import numpy as np
 import time
 from sklearn.decomposition import PCA
-from creatGabor import createGabor
+from createGabor import createGabor
 
 
 
