@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn import preprocessing
 from sklearn.cluster import KMeans
 from createGabor import createGabor
-
+from code import gauss2D
 
 
 # Hyperparameters
