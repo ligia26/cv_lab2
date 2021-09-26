@@ -6,8 +6,7 @@ def  gauss1D(sigma ,kernel_size):
         return [1 / (sigma * sqrt(2*pi)) * exp(-float(x)**2/(2*sigma**2)) for x in r]
 
 def  gauss2D(sigma ,kernel_size):
-	# your code
-	return G
+	return gauss1D(sigma_x,kernel_size)*gauss1D(sigma_y,kernel_size)
 
 def createGabor():
 	# your code
